@@ -5,5 +5,5 @@ public interface HitStats {
 
     String getUri();
 
-    Long getCount();
+    Long getHits();
 }
