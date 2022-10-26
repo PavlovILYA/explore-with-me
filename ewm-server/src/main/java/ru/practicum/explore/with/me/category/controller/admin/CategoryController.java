@@ -11,9 +11,9 @@ import ru.practicum.explore.with.me.category.service.CategoryService;
 import javax.validation.Valid;
 
 @Slf4j
-@RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/categories")
+@RestController("AdminCategoryController")
 public class CategoryController {
     private final CategoryService categoryService;
 
@@ -23,13 +23,6 @@ public class CategoryController {
         Category category = CategoryMapper.toCategory(categoryDto);
         return CategoryMapper.toCategoryDto(
                 categoryService.saveCategory(category));
-    }
-
-    @GetMapping("/{categoryId}")
-    public CategoryDto getCategory(@PathVariable Long categoryId) {
-        log.info("GET /admin/categories/{}", categoryId);
-        return CategoryMapper.toCategoryDto(
-                categoryService.getCategory(categoryId));
     }
 
     @PatchMapping
