@@ -25,7 +25,8 @@ public class CategoryService {
 
     public Category updateCategory(Category category) {
         Category categoryFromDb = getCategory(category.getId());
-        categoryFromDb.setName(category.getName()); // does it work?
+        categoryFromDb.setName(category.getName());
+        categoryRepository.save(categoryFromDb);
         log.info("Updated category: {}", categoryFromDb);
         return categoryFromDb;
     }
