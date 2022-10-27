@@ -35,8 +35,8 @@ public class Event {
     private User initiator;
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "latitude", column = @Column(name = "location_latitude")),
-            @AttributeOverride(name = "longitude", column = @Column(name = "location_longitude"))
+            @AttributeOverride(name = "lat", column = @Column(name = "location_latitude")),
+            @AttributeOverride(name = "lon", column = @Column(name = "location_longitude"))
     })
     private Location location;
     private Boolean paid;

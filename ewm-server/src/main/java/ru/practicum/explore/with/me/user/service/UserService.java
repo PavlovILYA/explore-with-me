@@ -32,9 +32,15 @@ public class UserService {
     }
 
     public void deleteUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        User user = getUser(userId);
         userRepository.delete(user);
         log.info("User {} is deleted", userId);
+    }
+
+    public User getUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+        log.info("Get user {}", userId);
+        return user;
     }
 }

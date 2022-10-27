@@ -11,6 +11,6 @@ import javax.persistence.Embeddable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Location {
-    private Double latitude;
-    private Double longitude;
+    private double lat;
+    private double lon;
 }

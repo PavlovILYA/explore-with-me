@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS events (
     description VARCHAR(7000), --
     event_date TIMESTAMP NOT NULL, --
     initiator_id BIGINT NOT NULL,
-    location_latitude DOUBLE PRECISION NOT NULL, --
-    location_longitude DOUBLE PRECISION NOT NULL, --
+    location_latitude DOUBLE PRECISION, --
+    location_longitude DOUBLE PRECISION, --
     paid BOOLEAN NOT NULL, --
     participant_limit INT DEFAULT 0, --
     published_on TIMESTAMP,
@@ -58,3 +58,22 @@ CREATE TABLE IF NOT EXISTS participation_requests (
     FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
     FOREIGN KEY (requester_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+
+-- DELETE FROM participation_requests;
+-- DELETE FROM events_compilations;
+-- DELETE FROM compilations;
+-- DELETE FROM events;
+-- DELETE FROM categories;
+-- DELETE FROM users;
+--
+-- DROP TABLE participation_requests;
+-- DROP TABLE events_compilations;
+-- DROP TABLE compilations;
+-- DROP TABLE events;
+-- DROP TABLE categories;
+-- DROP TABLE users;
+
+
+
+
