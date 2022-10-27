@@ -13,10 +13,10 @@ CREATE TABLE IF NOT EXISTS categories (
 
 CREATE TABLE IF NOT EXISTS events (
     id BIGINT GENERATED ALWAYS AS IDENTITY,
-    annotation VARCHAR(255) UNIQUE NOT NULL, --
+    annotation VARCHAR(2000) UNIQUE NOT NULL, --
     category_id BIGINT NOT NULL, --
     created_on TIMESTAMP NOT NULL,
-    description TEXT, --
+    description VARCHAR(7000), --
     event_date TIMESTAMP NOT NULL, --
     initiator_id BIGINT NOT NULL,
     location_latitude DOUBLE PRECISION NOT NULL, --
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS events (
     published_on TIMESTAMP,
     request_moderation BOOLEAN DEFAULT TRUE, --
     state VARCHAR(50) NOT NULL,
-    title TEXT UNIQUE NOT NULL, --
+    title VARCHAR(120) UNIQUE NOT NULL, --
     --     views
     PRIMARY KEY (id),
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
