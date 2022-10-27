@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.explore.with.me.category.exception.CategoryNotFoundException;
 import ru.practicum.explore.with.me.event.exception.EventCancelException;
 import ru.practicum.explore.with.me.event.exception.EventNotFoundException;
+import ru.practicum.explore.with.me.event.exception.EventPublishException;
 import ru.practicum.explore.with.me.user.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
@@ -29,7 +30,8 @@ public class ErrorHandler {
                 .build();
     }
 
-    @ExceptionHandler(EventCancelException.class)
+    @ExceptionHandler({EventCancelException.class,
+                       EventPublishException.class})
     public ErrorResponse handle403Exception(final Exception e) {
         log.error("{} {}", HttpStatus.FORBIDDEN, e.getMessage());
         return ErrorResponse.builder()
