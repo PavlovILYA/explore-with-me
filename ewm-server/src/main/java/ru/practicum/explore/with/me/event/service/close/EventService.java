@@ -1,4 +1,4 @@
-package ru.practicum.explore.with.me.event.service;
+package ru.practicum.explore.with.me.event.service.close;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import ru.practicum.explore.with.me.event.repository.EventRepository;
 import java.util.List;
 
 @Slf4j
-@Service
+@Service("PrivateEventService")
 @RequiredArgsConstructor
 public class EventService {
     private final EventRepository eventRepository;
