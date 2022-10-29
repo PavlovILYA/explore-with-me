@@ -1,11 +1,10 @@
 package ru.practicum.explore.with.me.request.controller.close;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore.with.me.event.model.Event;
-import ru.practicum.explore.with.me.event.service.admin.EventService;
+import ru.practicum.explore.with.me.event.service.EventService;
 import ru.practicum.explore.with.me.request.RequestMapper;
 import ru.practicum.explore.with.me.request.dto.RequestDto;
 import ru.practicum.explore.with.me.request.model.ParticipationRequest;
@@ -19,18 +18,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class RequestController {
     private final RequestService requestService;
-    @Qualifier("AdminEventService")
     private final EventService eventService;
     private final UserService userService;
-
-    @Autowired
-    public RequestController(RequestService requestService, EventService eventService, UserService userService) {
-        this.requestService = requestService;
-        this.eventService = eventService;
-        this.userService = userService;
-    }
 
     @PostMapping("/{userId}/requests")
     public RequestDto saveRequest(@PathVariable("userId") Long userId,
@@ -44,9 +36,9 @@ public class RequestController {
     }
 
     @GetMapping("/{userId}/requests")
-    public List<RequestDto> getRequests(@PathVariable("userId") Long userId) {
+    public List<RequestDto> getMyRequests(@PathVariable("userId") Long userId) {
         log.info("GET /users/{}/requests", userId);
-        return requestService.getRequests(userId).stream()
+        return requestService.getMyRequests(userId).stream()
                 .map(RequestMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -57,5 +49,25 @@ public class RequestController {
         log.info("PATCH /users/{}/requests/{}/cancel", userId, requestId);
         return RequestMapper.toDto(
                 requestService.cancelRequest(userId, requestId));
+    }
+
+    @GetMapping("/{userId}/events/{eventId}/requests")
+    public List<RequestDto> getRequestsToMyEvent(@PathVariable("userId") Long userId,
+                                                 @PathVariable("eventId") Long requestId) {
+        return null;
+    }
+
+    @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/confirm")
+    public RequestDto confirmRequestToMyEvent(@PathVariable("userId") Long userId,
+                                              @PathVariable("eventId") Long eventId,
+                                              @PathVariable("reqId") Long requestId) {
+        return null;
+    }
+
+    @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/reject")
+    public RequestDto rejectRequestToMyEvent(@PathVariable("userId") Long userId,
+                                             @PathVariable("eventId") Long eventId,
+                                             @PathVariable("reqId") Long requestId) {
+        return null;
     }
 }
