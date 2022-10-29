@@ -53,21 +53,28 @@ public class RequestController {
 
     @GetMapping("/{userId}/events/{eventId}/requests")
     public List<RequestDto> getRequestsToMyEvent(@PathVariable("userId") Long userId,
-                                                 @PathVariable("eventId") Long requestId) {
-        return null;
+                                                 @PathVariable("eventId") Long eventId) {
+        log.info("GET /users/{}/events/{}/requests", userId, eventId);
+        return requestService.getRequestsToMyEvent(userId, eventId).stream()
+                .map(RequestMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/confirm")
     public RequestDto confirmRequestToMyEvent(@PathVariable("userId") Long userId,
                                               @PathVariable("eventId") Long eventId,
                                               @PathVariable("reqId") Long requestId) {
-        return null;
+        log.info("PATCH /users/{}/events/{}/requests/{}/confirm", userId, eventId, requestId);
+        return RequestMapper.toDto(
+                requestService.confirmRequestToMyEvent(userId, eventId, requestId));
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/reject")
     public RequestDto rejectRequestToMyEvent(@PathVariable("userId") Long userId,
                                              @PathVariable("eventId") Long eventId,
                                              @PathVariable("reqId") Long requestId) {
-        return null;
+        log.info("PATCH /users/{}/events/{}/requests/{}/reject", userId, eventId, requestId);
+        return RequestMapper.toDto(
+                requestService.rejectRequestToMyEvent(userId, eventId, requestId));
     }
 }

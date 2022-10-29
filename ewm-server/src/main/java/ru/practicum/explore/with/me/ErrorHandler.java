@@ -8,6 +8,8 @@ import ru.practicum.explore.with.me.category.exception.CategoryNotFoundException
 import ru.practicum.explore.with.me.event.exception.EventCancelException;
 import ru.practicum.explore.with.me.event.exception.EventNotFoundException;
 import ru.practicum.explore.with.me.event.exception.EventPublishException;
+import ru.practicum.explore.with.me.request.exception.RequestNotFoundException;
+import ru.practicum.explore.with.me.request.exception.RequestValidationException;
 import ru.practicum.explore.with.me.user.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
@@ -19,7 +21,8 @@ import static ru.practicum.explore.with.me.Constants.formatter;
 public class ErrorHandler {
     @ExceptionHandler({UserNotFoundException.class,
                        CategoryNotFoundException.class,
-                       EventNotFoundException.class})
+                       EventNotFoundException.class,
+                       RequestNotFoundException.class})
     public ErrorResponse handle404Exception(final Exception e) {
         log.error("{} {}", HttpStatus.NOT_FOUND, e.getMessage());
         return ErrorResponse.builder()
@@ -31,7 +34,8 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler({EventCancelException.class,
-                       EventPublishException.class})
+                       EventPublishException.class,
+                       RequestValidationException.class})
     public ErrorResponse handle403Exception(final Exception e) {
         log.error("{} {}", HttpStatus.FORBIDDEN, e.getMessage());
         return ErrorResponse.builder()
