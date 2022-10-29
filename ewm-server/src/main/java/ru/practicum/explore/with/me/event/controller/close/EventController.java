@@ -2,7 +2,6 @@ package ru.practicum.explore.with.me.event.controller.close;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore.with.me.category.model.Category;
@@ -13,21 +12,19 @@ import ru.practicum.explore.with.me.event.dto.request.EventUpdateDto;
 import ru.practicum.explore.with.me.event.dto.response.EventFullDto;
 import ru.practicum.explore.with.me.event.dto.response.EventShortDto;
 import ru.practicum.explore.with.me.event.model.Event;
-import ru.practicum.explore.with.me.event.service.close.EventService;
+import ru.practicum.explore.with.me.event.service.EventService;
 import ru.practicum.explore.with.me.user.model.User;
 import ru.practicum.explore.with.me.user.service.UserService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Validated
 @RequestMapping("/users")
 @RestController("PrivateEventController")
 public class EventController {
-    @Qualifier("PrivateEventService")
     private final EventService eventService;
     private final UserService userService;
     private final CategoryService categoryService;
@@ -46,8 +43,7 @@ public class EventController {
         User user = userService.getUser(userId);
         Category category = categoryService.getCategory(eventCreateDto.getCategory());
         Event event = EventMapper.toEvent(eventCreateDto, category, user);
-        return EventMapper.toFullDto(
-                eventService.saveEventByUser(event));
+        return eventService.saveEventByUser(event);
     }
 
     @PatchMapping("/{userId}/events")
@@ -57,35 +53,30 @@ public class EventController {
         Category category = eventUpdateDto.getCategory() == null
                 ? null
                 : categoryService.getCategory(eventUpdateDto.getCategory());
-        return EventMapper.toFullDto(
-                eventService.updateEventByUser(userId, eventUpdateDto, category));
+        return eventService.updateEventByUser(userId, eventUpdateDto, category);
     }
 
     @GetMapping("/{userId}/events")
-    public List<EventShortDto> getEventsByUser(@PathVariable Long userId,
-                                               @PositiveOrZero
-                                               @RequestParam(value = "from", defaultValue = "0") int from,
-                                               @PositiveOrZero
-                                               @RequestParam(value = "size", defaultValue = "10") int size) {
+    public List<? extends EventShortDto> getEventsByUser(@PathVariable Long userId,
+                                                         @PositiveOrZero
+                                                         @RequestParam(value = "from", defaultValue = "0") int from,
+                                                         @PositiveOrZero
+                                                         @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("GET /users/{}/events from={} size={}", userId, from, size);
-        return eventService.getEventsByUser(userId, from, size).stream()
-                .map(EventMapper::toShortDto)
-                .collect(Collectors.toList());
+        return eventService.getEventsByUser(userId, from, size);
     }
 
     @GetMapping("/{userId}/events/{eventId}")
     public EventFullDto getEventByUser(@PathVariable("userId") Long userId,
                                        @PathVariable("eventId") Long eventId) {
         log.info("GET /users/{}/events/{}", userId, eventId);
-        return EventMapper.toFullDto(
-                eventService.getEventByUser(userId, eventId));
+        return eventService.getEventByUser(userId, eventId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}") // только событие в состоянии ожидания!
     public EventFullDto cancelEventByUser(@PathVariable("userId") Long userId,
                                           @PathVariable("eventId") Long eventId) {
         log.info("PATCH /users/{}/events/{} – cancel event", userId, eventId);
-        return EventMapper.toFullDto(
-                eventService.cancelEventByUser(userId, eventId));
+        return eventService.cancelEventByUser(userId, eventId);
     }
 }

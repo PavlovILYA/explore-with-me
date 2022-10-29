@@ -5,7 +5,6 @@ import ru.practicum.explore.with.me.category.model.Category;
 import ru.practicum.explore.with.me.event.dto.request.BaseEventUpdateDto;
 import ru.practicum.explore.with.me.event.dto.request.EventCreateDto;
 import ru.practicum.explore.with.me.event.dto.response.EventFullDto;
-import ru.practicum.explore.with.me.event.dto.response.EventShortDto;
 import ru.practicum.explore.with.me.event.model.Event;
 import ru.practicum.explore.with.me.event.model.EventState;
 import ru.practicum.explore.with.me.user.UserMapper;
@@ -68,12 +67,12 @@ public class EventMapper {
         }
     }
 
-    public static EventFullDto toFullDto(Event event) {
+    public static EventFullDto toFullDto(Event event, Integer confirmedRequests) {
         return EventFullDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
                 .category(CategoryMapper.toCategoryDto(event.getCategory()))
-//                .confirmedRequests() // ?
+                .confirmedRequests(confirmedRequests)
                 .createdOn(event.getCreatedOn().format(formatter))
                 .description(event.getDescription())
                 .eventDate(event.getEventDate().format(formatter))
@@ -84,20 +83,6 @@ public class EventMapper {
                 .publishedOn(event.getPublishedOn() == null ? null : event.getPublishedOn().format(formatter))
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState().name())
-                .title(event.getTitle())
-//                .views() // ?
-                .build();
-    }
-
-    public static EventShortDto toShortDto(Event event) {
-        return EventShortDto.builder()
-                .id(event.getId())
-                .annotation(event.getAnnotation())
-                .category(CategoryMapper.toCategoryDto(event.getCategory()))
-//                .confirmedRequests() // ?
-                .eventDate(event.getEventDate().format(formatter))
-                .initiator(UserMapper.userShortDto(event.getInitiator()))
-                .paid(event.getPaid())
                 .title(event.getTitle())
 //                .views() // ?
                 .build();
