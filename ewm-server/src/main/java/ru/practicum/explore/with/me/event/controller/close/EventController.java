@@ -1,6 +1,7 @@
 package ru.practicum.explore.with.me.event.controller.close;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,7 @@ public class EventController {
     private final UserService userService;
     private final CategoryService categoryService;
 
+    @Autowired
     public EventController(EventService eventService, UserService userService, CategoryService categoryService) {
         this.eventService = eventService;
         this.userService = userService;

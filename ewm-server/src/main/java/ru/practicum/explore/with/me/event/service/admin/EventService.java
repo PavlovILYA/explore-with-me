@@ -70,7 +70,7 @@ public class EventService {
         return rejectedEvent;
     }
 
-    private Event getEvent(Long eventId) {
+    public Event getEvent(Long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new EventNotFoundException(eventId));
     }
