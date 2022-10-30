@@ -146,7 +146,7 @@ public class EventService {
         }
     }
 
-    private EventFullDto addConfirmedRequestsAndViews(Event event) {
+    public EventFullDto addConfirmedRequestsAndViews(Event event) {
         Integer confirmedRequests = eventRepository.getConfirmedRequestAmount(event.getId());
         return EventMapper.toFullDto(event, confirmedRequests);
     }

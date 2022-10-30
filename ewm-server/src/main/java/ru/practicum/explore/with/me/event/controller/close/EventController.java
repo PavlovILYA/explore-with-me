@@ -19,6 +19,7 @@ import ru.practicum.explore.with.me.user.service.UserService;
 import javax.validation.Valid;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Validated
@@ -57,13 +58,15 @@ public class EventController {
     }
 
     @GetMapping("/{userId}/events")
-    public List<? extends EventShortDto> getEventsByUser(@PathVariable Long userId,
+    public List<EventShortDto> getEventsByUser(@PathVariable Long userId,
                                                          @PositiveOrZero
                                                          @RequestParam(value = "from", defaultValue = "0") int from,
                                                          @PositiveOrZero
                                                          @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("GET /users/{}/events from={} size={}", userId, from, size);
-        return eventService.getEventsByUser(userId, from, size);
+        return eventService.getEventsByUser(userId, from, size).stream()
+                .map(EventMapper::toShortDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{userId}/events/{eventId}")

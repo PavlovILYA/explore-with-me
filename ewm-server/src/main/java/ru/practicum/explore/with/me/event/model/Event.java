@@ -49,4 +49,24 @@ public class Event {
     @JsonIgnore
     @ManyToMany(mappedBy = "events", fetch = FetchType.LAZY)
     private List<Compilation> compilations;
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "id=" + id +
+                ", annotation='" + annotation + '\'' +
+                ", category=" + category +
+                ", createdOn=" + createdOn +
+                ", description='" + description + '\'' +
+                ", eventDate=" + eventDate +
+                ", initiator=" + initiator +
+                ", location=" + location +
+                ", paid=" + paid +
+                ", participantLimit=" + participantLimit +
+                ", publishedOn=" + publishedOn +
+                ", requestModeration=" + requestModeration +
+                ", state=" + state +
+                ", title='" + title + '\'' +
+                '}';
+    }
 }

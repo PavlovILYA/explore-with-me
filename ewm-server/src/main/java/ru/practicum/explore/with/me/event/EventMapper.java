@@ -5,6 +5,7 @@ import ru.practicum.explore.with.me.category.model.Category;
 import ru.practicum.explore.with.me.event.dto.request.BaseEventUpdateDto;
 import ru.practicum.explore.with.me.event.dto.request.EventCreateDto;
 import ru.practicum.explore.with.me.event.dto.response.EventFullDto;
+import ru.practicum.explore.with.me.event.dto.response.EventShortDto;
 import ru.practicum.explore.with.me.event.model.Event;
 import ru.practicum.explore.with.me.event.model.EventState;
 import ru.practicum.explore.with.me.user.UserMapper;
@@ -84,6 +85,20 @@ public class EventMapper {
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState().name())
                 .title(event.getTitle())
+//                .views() // ?
+                .build();
+    }
+
+    public static EventShortDto toShortDto(EventFullDto eventFullDto) {
+        return EventShortDto.builder()
+                .id(eventFullDto.getId())
+                .annotation(eventFullDto.getAnnotation())
+                .category(eventFullDto.getCategory())
+                .confirmedRequests(eventFullDto.getConfirmedRequests())
+                .eventDate(eventFullDto.getEventDate())
+                .initiator(eventFullDto.getInitiator())
+                .paid(eventFullDto.getPaid())
+                .title(eventFullDto.getTitle())
 //                .views() // ?
                 .build();
     }
