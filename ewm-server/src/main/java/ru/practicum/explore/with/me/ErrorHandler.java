@@ -3,8 +3,10 @@ package ru.practicum.explore.with.me;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.explore.with.me.category.exception.CategoryNotFoundException;
+import ru.practicum.explore.with.me.compilation.exception.CompilationNotFoundException;
 import ru.practicum.explore.with.me.event.exception.EventCancelException;
 import ru.practicum.explore.with.me.event.exception.EventNotFoundException;
 import ru.practicum.explore.with.me.event.exception.EventPublishException;
@@ -22,7 +24,9 @@ public class ErrorHandler {
     @ExceptionHandler({UserNotFoundException.class,
                        CategoryNotFoundException.class,
                        EventNotFoundException.class,
-                       RequestNotFoundException.class})
+                       RequestNotFoundException.class,
+                       CompilationNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handle404Exception(final Exception e) {
         log.error("{} {}", HttpStatus.NOT_FOUND, e.getMessage());
         return ErrorResponse.builder()
@@ -36,6 +40,7 @@ public class ErrorHandler {
     @ExceptionHandler({EventCancelException.class,
                        EventPublishException.class,
                        RequestValidationException.class})
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handle403Exception(final Exception e) {
         log.error("{} {}", HttpStatus.FORBIDDEN, e.getMessage());
         return ErrorResponse.builder()
@@ -47,6 +52,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handle500Exception(final Exception e) {
         log.error("{} {}", HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         return ErrorResponse.builder()
