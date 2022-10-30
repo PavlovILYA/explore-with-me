@@ -2,6 +2,8 @@
 
 ```Spring Boot``` ```Spring Data Jpa``` ```QueryDSL``` ```PostgreSQL``` ```HttpClient``` ```Swagger``` ```Postman``` ```Docker```
 
+# PR для ревьюера: https://github.com/PavlovILYA/java-explore-with-me/pull/1
+
 Сервис – афиша, где можно предложить какое-либо событие от выставки до похода в кино и набрать компанию для участия в нём.
 
 # Архитектура
