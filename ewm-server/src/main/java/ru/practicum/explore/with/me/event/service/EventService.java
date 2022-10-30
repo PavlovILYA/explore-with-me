@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.with.me.category.model.Category;
+import ru.practicum.explore.with.me.client.HitClient;
+import ru.practicum.explore.with.me.dto.HitDto;
 import ru.practicum.explore.with.me.event.EventMapper;
 import ru.practicum.explore.with.me.event.dto.request.EventCreateDto;
 import ru.practicum.explore.with.me.event.dto.request.EventSort;
@@ -16,6 +18,7 @@ import ru.practicum.explore.with.me.event.dto.response.EventFullDto;
 import ru.practicum.explore.with.me.event.exception.EventCancelException;
 import ru.practicum.explore.with.me.event.exception.EventNotFoundException;
 import ru.practicum.explore.with.me.event.exception.EventValidationException;
+import ru.practicum.explore.with.me.event.exception.HitSendException;
 import ru.practicum.explore.with.me.event.model.DslPredicate;
 import ru.practicum.explore.with.me.event.model.Event;
 import ru.practicum.explore.with.me.event.model.EventState;
@@ -37,6 +40,7 @@ import static ru.practicum.explore.with.me.event.model.QEvent.event;
 @RequiredArgsConstructor
 public class EventService {
     private final EventRepository eventRepository;
+    private final HitClient hitClient;
 
     public EventFullDto saveEventByUser(Event event) {
         Event savedEvent = eventRepository.save(event);
@@ -71,7 +75,6 @@ public class EventService {
         return addConfirmedRequestsAndViews(event);
     }
 
-    // только событие в состоянии ожидания!
     public EventFullDto cancelEventByUser(Long userId, Long eventId) {
         Event event = getEvent(eventId);
         if (!Objects.equals(event.getInitiator().getId(), userId)) {
@@ -134,7 +137,7 @@ public class EventService {
                                                         LocalDateTime start, LocalDateTime end,
                                                         Boolean onlyAvailable, EventSort eventSort,
                                                         int from, int size,
-                                                        String app, String uri, String ip) {
+                                                        HitDto hitDto) {
         Predicate predicate = DslPredicate.builder()
                 .addPredicate(text, t -> event.description.containsIgnoreCase(t)
                         .or(event.annotation.containsIgnoreCase(t)))
@@ -142,18 +145,26 @@ public class EventService {
                 .addPredicate(start, event.eventDate::goe)
                 .addPredicate(end, event.eventDate::loe)
                 .build();
+        // изначально сортируем по дате
         Stream<Event> eventStream = StreamSupport.stream(
                 eventRepository.findAll(predicate, Sort.by("eventDate")).spliterator(), false);
+        // если нужно, фильтруем – оставляем только события, у которых не исчерпан лимит запросов на участие
         if (onlyAvailable) {
             eventStream = getOnlyAvailable(eventStream);
         }
         Stream<EventFullDto> eventDtoStream = eventStream.map(this::addConfirmedRequestsAndViews);
+        // если нужно, сортируем по просмотрам
         if (eventSort.equals(EventSort.VIEWS)) {
             eventDtoStream = eventDtoStream.sorted(Comparator.comparing(EventFullDto::getViews));
         }
-//        List<EventFullDto> events = eventDtoStream.skip(from).limit(size).collect(Collectors.toList());
+        sendHit(hitDto);
         return eventDtoStream.skip(from).limit(size).collect(Collectors.toList());
-        // stats post
+    }
+
+    private void sendHit(HitDto hitDto) {
+        if (!hitClient.saveHit(hitDto)) {
+            throw new HitSendException(hitDto.toString());
+        }
     }
 
     private Stream<Event> getOnlyAvailable(Stream<Event> eventStream) {
@@ -161,10 +172,10 @@ public class EventService {
                 eventRepository.getConfirmedRequestAmount(event.getId()) < event.getParticipantLimit());
     }
 
-    public EventFullDto getEventAndConsiderStats(Long eventId, String app, String uri, String ip) {
+    public EventFullDto getEventAndConsiderStats(Long eventId, HitDto hitDto) {
         Event event = getEvent(eventId);
         validateBeforeGet(event);
-        // stats post
+        sendHit(hitDto);
         return addConfirmedRequestsAndViews(event);
     }
 
