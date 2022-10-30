@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.explore.with.me.category.model.Category;
 import ru.practicum.explore.with.me.client.HitClient;
 import ru.practicum.explore.with.me.dto.HitDto;
+import ru.practicum.explore.with.me.dto.HitStats;
 import ru.practicum.explore.with.me.event.EventMapper;
 import ru.practicum.explore.with.me.event.dto.request.EventCreateDto;
 import ru.practicum.explore.with.me.event.dto.request.EventSort;
@@ -161,17 +162,6 @@ public class EventService {
         return eventDtoStream.skip(from).limit(size).collect(Collectors.toList());
     }
 
-    private void sendHit(HitDto hitDto) {
-        if (!hitClient.saveHit(hitDto)) {
-            throw new HitSendException(hitDto.toString());
-        }
-    }
-
-    private Stream<Event> getOnlyAvailable(Stream<Event> eventStream) {
-        return eventStream.filter(event ->
-                eventRepository.getConfirmedRequestAmount(event.getId()) < event.getParticipantLimit());
-    }
-
     public EventFullDto getEventAndConsiderStats(Long eventId, HitDto hitDto) {
         Event event = getEvent(eventId);
         validateBeforeGet(event);
@@ -186,8 +176,30 @@ public class EventService {
 
     public EventFullDto addConfirmedRequestsAndViews(Event event) {
         Integer confirmedRequests = eventRepository.getConfirmedRequestAmount(event.getId());
-        // stats get
-        return EventMapper.toFullDto(event, confirmedRequests);
+        String currentUri = "/events/" + event.getId();
+        List<HitStats> stats = hitClient.getStats(event.getCreatedOn(), LocalDateTime.now(),
+                List.of(currentUri), false);
+        log.info("HitStats: {}", stats);
+        return EventMapper.toFullDto(event, confirmedRequests, getHitCount(stats, currentUri));
+    }
+
+    private Long getHitCount(List<HitStats> stats, String currentUri) {
+        HitStats hitStats = stats.stream()
+                .filter(s -> s.getUri().equals(currentUri))
+                .findAny()
+                .orElse(HitStats.builder().hits(0L).build());
+        return hitStats.getHits();
+    }
+
+    private void sendHit(HitDto hitDto) {
+        if (!hitClient.saveHit(hitDto)) {
+            throw new HitSendException(hitDto.toString());
+        }
+    }
+
+    private Stream<Event> getOnlyAvailable(Stream<Event> eventStream) {
+        return eventStream.filter(event ->
+                eventRepository.getConfirmedRequestAmount(event.getId()) < event.getParticipantLimit());
     }
 
     private void validateEventBeforePublishing(Event event) {
