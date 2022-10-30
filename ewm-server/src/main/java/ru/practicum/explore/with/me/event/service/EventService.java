@@ -5,15 +5,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.with.me.category.model.Category;
 import ru.practicum.explore.with.me.event.EventMapper;
 import ru.practicum.explore.with.me.event.dto.request.EventCreateDto;
+import ru.practicum.explore.with.me.event.dto.request.EventSort;
 import ru.practicum.explore.with.me.event.dto.request.EventUpdateDto;
 import ru.practicum.explore.with.me.event.dto.response.EventFullDto;
 import ru.practicum.explore.with.me.event.exception.EventCancelException;
 import ru.practicum.explore.with.me.event.exception.EventNotFoundException;
-import ru.practicum.explore.with.me.event.exception.EventPublishException;
+import ru.practicum.explore.with.me.event.exception.EventValidationException;
 import ru.practicum.explore.with.me.event.model.DslPredicate;
 import ru.practicum.explore.with.me.event.model.Event;
 import ru.practicum.explore.with.me.event.model.EventState;
@@ -21,9 +23,12 @@ import ru.practicum.explore.with.me.event.repository.EventRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static ru.practicum.explore.with.me.event.model.QEvent.event;
 
@@ -125,29 +130,74 @@ public class EventService {
         return addConfirmedRequestsAndViews(rejectedEvent);
     }
 
+    public List<EventFullDto> getEventsAndConsiderStats(String text, Boolean paid,
+                                                        LocalDateTime start, LocalDateTime end,
+                                                        Boolean onlyAvailable, EventSort eventSort,
+                                                        int from, int size,
+                                                        String app, String uri, String ip) {
+        Predicate predicate = DslPredicate.builder()
+                .addPredicate(text, t -> event.description.containsIgnoreCase(t)
+                        .or(event.annotation.containsIgnoreCase(t)))
+                .addPredicate(paid, event.paid::eq)
+                .addPredicate(start, event.eventDate::goe)
+                .addPredicate(end, event.eventDate::loe)
+                .build();
+        Stream<Event> eventStream = StreamSupport.stream(
+                eventRepository.findAll(predicate, Sort.by("eventDate")).spliterator(), false);
+        if (onlyAvailable) {
+            eventStream = getOnlyAvailable(eventStream);
+        }
+        Stream<EventFullDto> eventDtoStream = eventStream.map(this::addConfirmedRequestsAndViews);
+        if (eventSort.equals(EventSort.VIEWS)) {
+            eventDtoStream = eventDtoStream.sorted(Comparator.comparing(EventFullDto::getViews));
+        }
+//        List<EventFullDto> events = eventDtoStream.skip(from).limit(size).collect(Collectors.toList());
+        return eventDtoStream.skip(from).limit(size).collect(Collectors.toList());
+        // stats post
+    }
+
+    private Stream<Event> getOnlyAvailable(Stream<Event> eventStream) {
+        return eventStream.filter(event ->
+                eventRepository.getConfirmedRequestAmount(event.getId()) < event.getParticipantLimit());
+    }
+
+    public EventFullDto getEventAndConsiderStats(Long eventId, String app, String uri, String ip) {
+        Event event = getEvent(eventId);
+        validateBeforeGet(event);
+        // stats post
+        return addConfirmedRequestsAndViews(event);
+    }
+
     public Event getEvent(Long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new EventNotFoundException(eventId));
     }
 
+    public EventFullDto addConfirmedRequestsAndViews(Event event) {
+        Integer confirmedRequests = eventRepository.getConfirmedRequestAmount(event.getId());
+        // stats get
+        return EventMapper.toFullDto(event, confirmedRequests);
+    }
+
     private void validateEventBeforePublishing(Event event) {
         if (event.getEventDate().isBefore(
                 LocalDateTime.now().plus(1, ChronoUnit.HOURS))) {
-            throw new EventPublishException("It's too late for publishing this event– cannot publish");
+            throw new EventValidationException("It's too late for publishing this event– cannot publish");
         }
         if (!event.getState().equals(EventState.PENDING)) {
-            throw new EventPublishException("The event is not pending – cannot publish");
+            throw new EventValidationException("The event is not pending – cannot publish");
         }
     }
 
     private void validateEventBeforeRejecting(Event event) {
         if (event.getState().equals(EventState.PUBLISHED)) {
-            throw new EventPublishException("The event is published – cannot reject");
+            throw new EventValidationException("The event is published – cannot reject");
         }
     }
 
-    public EventFullDto addConfirmedRequestsAndViews(Event event) {
-        Integer confirmedRequests = eventRepository.getConfirmedRequestAmount(event.getId());
-        return EventMapper.toFullDto(event, confirmedRequests);
+    private void validateBeforeGet(Event event) {
+        if (!event.getState().equals(EventState.PUBLISHED)) {
+            throw new EventValidationException("The event is not published yet – cannot get");
+        }
     }
 }

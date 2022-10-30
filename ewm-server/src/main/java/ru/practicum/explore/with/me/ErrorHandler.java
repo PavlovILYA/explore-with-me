@@ -9,7 +9,7 @@ import ru.practicum.explore.with.me.category.exception.CategoryNotFoundException
 import ru.practicum.explore.with.me.compilation.exception.CompilationNotFoundException;
 import ru.practicum.explore.with.me.event.exception.EventCancelException;
 import ru.practicum.explore.with.me.event.exception.EventNotFoundException;
-import ru.practicum.explore.with.me.event.exception.EventPublishException;
+import ru.practicum.explore.with.me.event.exception.EventValidationException;
 import ru.practicum.explore.with.me.request.exception.RequestNotFoundException;
 import ru.practicum.explore.with.me.request.exception.RequestValidationException;
 import ru.practicum.explore.with.me.user.exception.UserNotFoundException;
@@ -38,7 +38,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler({EventCancelException.class,
-                       EventPublishException.class,
+                       EventValidationException.class,
                        RequestValidationException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handle403Exception(final Exception e) {
