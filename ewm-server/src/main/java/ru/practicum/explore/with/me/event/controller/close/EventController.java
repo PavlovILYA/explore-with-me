@@ -17,6 +17,7 @@ import ru.practicum.explore.with.me.user.model.User;
 import ru.practicum.explore.with.me.user.service.UserService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,7 +62,7 @@ public class EventController {
     public List<EventShortDto> getEventsByUser(@PathVariable Long userId,
                                                          @PositiveOrZero
                                                          @RequestParam(value = "from", defaultValue = "0") int from,
-                                                         @PositiveOrZero
+                                                         @Positive
                                                          @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("GET /users/{}/events from={} size={}", userId, from, size);
         return eventService.getEventsByUser(userId, from, size).stream()

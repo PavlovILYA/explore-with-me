@@ -12,6 +12,7 @@ import ru.practicum.explore.with.me.event.dto.response.EventFullDto;
 import ru.practicum.explore.with.me.event.model.EventState;
 import ru.practicum.explore.with.me.event.service.EventService;
 
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,7 +40,7 @@ public class EventController {
                                                @RequestParam(value = "rangeEnd", defaultValue = "null") String rangeEnd,
                                                @PositiveOrZero
                                                @RequestParam(value = "from", defaultValue = "0") int from,
-                                               @PositiveOrZero
+                                               @Positive
                                                @RequestParam(value = "size", defaultValue = "10") int size) {
         LocalDateTime start = DateTImeEncoder.decodeAndParse(rangeStart);
         LocalDateTime end = DateTImeEncoder.decodeAndParse(rangeEnd);

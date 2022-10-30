@@ -2,6 +2,7 @@ package ru.practicum.explore.with.me.compilation.controller.open;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore.with.me.compilation.CompilationMapper;
 import ru.practicum.explore.with.me.compilation.dto.response.CompilationFullDto;
@@ -9,10 +10,13 @@ import ru.practicum.explore.with.me.compilation.model.Compilation;
 import ru.practicum.explore.with.me.compilation.service.CompilationService;
 import ru.practicum.explore.with.me.event.service.EventService;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/compilations")
 @RestController("PublicCompilationController")
@@ -22,7 +26,9 @@ public class CompilationController {
 
     @GetMapping
     public List<CompilationFullDto> getCompilations(@RequestParam(value = "pinned", defaultValue = "false") boolean pinned,
+                                                    @PositiveOrZero
                                                     @RequestParam(value = "from", defaultValue = "0") int from,
+                                                    @Positive
                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("GET /compilations pinned={} from={} size={}", pinned, from, size);
         return compilationService.getCompilations(pinned, from, size).stream()

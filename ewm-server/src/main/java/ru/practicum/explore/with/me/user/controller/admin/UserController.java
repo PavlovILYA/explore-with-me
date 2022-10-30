@@ -10,6 +10,7 @@ import ru.practicum.explore.with.me.user.model.User;
 import ru.practicum.explore.with.me.user.service.UserService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,8 +34,8 @@ public class UserController {
     public List<UserDto> getUsers(@RequestParam("ids") Long[] ids,
                                  @PositiveOrZero
                                  @RequestParam(value = "from", defaultValue = "0") int from,
-                                 @PositiveOrZero
-                                 @RequestParam(value = "size", defaultValue = "5") int size) {
+                                 @Positive
+                                 @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("GET /admin/users ids{} from={} size={}", ids, from, size);
         return userService.getUsers(ids, from, size).stream()
                 .map(UserMapper::toUserDto)
