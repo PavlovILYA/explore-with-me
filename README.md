@@ -1,6 +1,6 @@
 # Explore-With-Me – сервис для просмотра актуальных событий
 
-```Spring Boot``` ```Spring Data Jpa``` ```PostgreSQL``` ```HttpClient``` ```Swagger``` ```Postman``` ```Docker```
+```Spring Boot``` ```Spring Data Jpa``` ```QueryDSL``` ```PostgreSQL``` ```HttpClient``` ```Swagger``` ```Postman``` ```Docker```
 
 Сервис – афиша, где можно предложить какое-либо событие от выставки до похода в кино и набрать компанию для участия в нём.
 
