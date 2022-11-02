@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/admin/compilations")
-@RestController("AdminCompilationController")
+@RestController("adminCompilationController")
 public class CompilationController {
     private final CompilationService compilationService;
     private final EventService eventService;

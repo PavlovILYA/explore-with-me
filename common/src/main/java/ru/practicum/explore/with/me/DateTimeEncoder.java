@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 import static ru.practicum.explore.with.me.Constants.formatter;
 
-public class DateTImeEncoder {
+public class DateTimeEncoder {
     public static String encode(LocalDateTime dateTime) {
         String dateTimeString = dateTime.format(formatter);
         return URLEncoder.encode(dateTimeString, StandardCharsets.UTF_8);

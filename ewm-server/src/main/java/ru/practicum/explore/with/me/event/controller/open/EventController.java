@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explore.with.me.DateTImeEncoder;
+import ru.practicum.explore.with.me.DateTimeEncoder;
 import ru.practicum.explore.with.me.dto.HitDto;
 import ru.practicum.explore.with.me.event.EventMapper;
 import ru.practicum.explore.with.me.event.dto.request.EventSort;
@@ -25,7 +25,7 @@ import static ru.practicum.explore.with.me.Constants.formatter;
 @Validated
 @RequiredArgsConstructor
 @RequestMapping("/events")
-@RestController("PublicEventController")
+@RestController("publicEventController")
 public class EventController {
     private static final String APP = "ewm-main-service";
     private final EventService eventService;
@@ -45,8 +45,8 @@ public class EventController {
                                          HttpServletRequest request) {
         HitDto hitDto = makeHitDto(request.getRequestURI(), request.getRemoteAddr());
         log.info("HIT: {}", hitDto);
-        LocalDateTime start = DateTImeEncoder.decodeAndParse(rangeStart);
-        LocalDateTime end = DateTImeEncoder.decodeAndParse(rangeEnd);
+        LocalDateTime start = DateTimeEncoder.decodeAndParse(rangeStart);
+        LocalDateTime end = DateTimeEncoder.decodeAndParse(rangeEnd);
         EventSort eventSort = EventSort.valueOf(sort);
         log.info("GET /events text={} paid={} start={} end={} onlyAvailable={} sort={} from={} size={}",
                 text, paid, start, end, onlyAvailable, eventSort, from, size);

@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explore.with.me.DateTImeEncoder;
+import ru.practicum.explore.with.me.DateTimeEncoder;
 import ru.practicum.explore.with.me.category.model.Category;
 import ru.practicum.explore.with.me.category.service.CategoryService;
 import ru.practicum.explore.with.me.event.dto.request.EventCreateDto;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Validated
 @RequestMapping("/admin/events")
-@RestController("AdminEventController")
+@RestController("adminEventController")
 public class EventController {
     private final EventService eventService;
     private final CategoryService categoryService;
@@ -42,8 +42,8 @@ public class EventController {
                                                @RequestParam(value = "from", defaultValue = "0") int from,
                                                @Positive
                                                @RequestParam(value = "size", defaultValue = "10") int size) {
-        LocalDateTime start = DateTImeEncoder.decodeAndParse(rangeStart);
-        LocalDateTime end = DateTImeEncoder.decodeAndParse(rangeEnd);
+        LocalDateTime start = DateTimeEncoder.decodeAndParse(rangeStart);
+        LocalDateTime end = DateTimeEncoder.decodeAndParse(rangeEnd);
         List<EventState> states = stringStates.stream()
                 .map(EventState::valueOf)
                 .collect(Collectors.toList());

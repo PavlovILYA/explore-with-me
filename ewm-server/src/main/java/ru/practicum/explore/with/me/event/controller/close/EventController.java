@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Validated
 @RequestMapping("/users")
-@RestController("PrivateEventController")
+@RestController("privateEventController")
 public class EventController {
     private final EventService eventService;
     private final UserService userService;
@@ -77,7 +77,7 @@ public class EventController {
         return eventService.getEventByUser(userId, eventId);
     }
 
-    @PatchMapping("/{userId}/events/{eventId}") // только событие в состоянии ожидания!
+    @PatchMapping("/{userId}/events/{eventId}")
     public EventFullDto cancelEventByUser(@PathVariable("userId") Long userId,
                                           @PathVariable("eventId") Long eventId) {
         log.info("PATCH /users/{}/events/{} – cancel event", userId, eventId);

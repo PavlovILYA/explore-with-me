@@ -1,10 +1,7 @@
 package ru.practicum.explore.with.me.event.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.explore.with.me.category.model.Category;
 import ru.practicum.explore.with.me.compilation.model.Compilation;
 import ru.practicum.explore.with.me.user.model.User;
@@ -47,26 +44,7 @@ public class Event {
     private EventState state;
     private String title;
     @JsonIgnore
+    @ToString.Exclude
     @ManyToMany(mappedBy = "events", fetch = FetchType.LAZY)
     private List<Compilation> compilations;
-
-    @Override
-    public String toString() {
-        return "Event{" +
-                "id=" + id +
-                ", annotation='" + annotation + '\'' +
-                ", category=" + category +
-                ", createdOn=" + createdOn +
-                ", description='" + description + '\'' +
-                ", eventDate=" + eventDate +
-                ", initiator=" + initiator +
-                ", location=" + location +
-                ", paid=" + paid +
-                ", participantLimit=" + participantLimit +
-                ", publishedOn=" + publishedOn +
-                ", requestModeration=" + requestModeration +
-                ", state=" + state +
-                ", title='" + title + '\'' +
-                '}';
-    }
 }

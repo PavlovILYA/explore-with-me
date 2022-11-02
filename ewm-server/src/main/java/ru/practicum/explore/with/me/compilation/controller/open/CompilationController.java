@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Validated
 @RequiredArgsConstructor
 @RequestMapping("/compilations")
-@RestController("PublicCompilationController")
+@RestController("publicCompilationController")
 public class CompilationController {
     private final CompilationService compilationService;
     private final EventService eventService;

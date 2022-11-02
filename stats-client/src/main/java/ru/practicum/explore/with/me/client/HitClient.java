@@ -13,7 +13,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import ru.practicum.explore.with.me.DateTImeEncoder;
+import ru.practicum.explore.with.me.DateTimeEncoder;
 import ru.practicum.explore.with.me.dto.HitDto;
 import ru.practicum.explore.with.me.dto.HitStats;
 
@@ -63,8 +63,8 @@ public class HitClient {
     private Map<String, String> gatherParameters(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         String urisString = String.join(",", uris);
         return Map.of(
-                "start", DateTImeEncoder.encode(start),
-                "end", DateTImeEncoder.encode(end),
+                "start", DateTimeEncoder.encode(start),
+                "end", DateTimeEncoder.encode(end),
                 "unique", unique.toString(),
                 "uris", urisString
         );

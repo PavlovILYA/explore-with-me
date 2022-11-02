@@ -32,8 +32,7 @@ public class UserService {
     }
 
     public void deleteUser(Long userId) {
-        User user = getUser(userId);
-        userRepository.delete(user);
+        userRepository.deleteById(userId);
         log.info("User {} is deleted", userId);
     }
 

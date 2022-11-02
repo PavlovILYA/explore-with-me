@@ -39,7 +39,6 @@ public class CompilationService {
     public void deleteEventFromCompilation(Long compilationId, Event event) {
         Compilation compilation = getCompilation(compilationId);
         compilation.getEvents().remove(event);
-//        compilation.getEvents().removeIf(e -> Objects.equals(e.getId(), event.getId()));
         Compilation updatedCompilation = compilationRepository.save(compilation);
         log.info("Event {} was deleted from compilation: {}", event.getId(), updatedCompilation);
     }

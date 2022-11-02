@@ -3,7 +3,7 @@ package ru.practicum.explore.with.me.hit.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explore.with.me.DateTImeEncoder;
+import ru.practicum.explore.with.me.DateTimeEncoder;
 import ru.practicum.explore.with.me.hit.HitMapper;
 import ru.practicum.explore.with.me.hit.dto.HitDto;
 import ru.practicum.explore.with.me.hit.model.Hit;
@@ -32,8 +32,8 @@ public class HitController {
                                    @RequestParam("end") String encodedEndString,
                                    @RequestParam("uris") String[] uris,
                                    @RequestParam(name = "unique", defaultValue = "false") Boolean unique) {
-        LocalDateTime start = DateTImeEncoder.decodeAndParse(encodedStartString);
-        LocalDateTime end = DateTImeEncoder.decodeAndParse(encodedEndString);
+        LocalDateTime start = DateTimeEncoder.decodeAndParse(encodedStartString);
+        LocalDateTime end = DateTimeEncoder.decodeAndParse(encodedEndString);
         log.info("GET {} start={} end={} uris={} unique={}", "/stats", start, end, uris, unique);
         return hitService.getStats(start, end, uris, unique);
     }
