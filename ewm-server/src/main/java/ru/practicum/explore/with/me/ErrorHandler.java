@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.explore.with.me.category.exception.CategoryNotFoundException;
+import ru.practicum.explore.with.me.comment.exception.CommentNotFoundException;
+import ru.practicum.explore.with.me.comment.exception.CommentValidationException;
 import ru.practicum.explore.with.me.compilation.exception.CompilationNotFoundException;
 import ru.practicum.explore.with.me.event.exception.EventCancelException;
 import ru.practicum.explore.with.me.event.exception.EventNotFoundException;
@@ -25,7 +27,8 @@ public class ErrorHandler {
                        CategoryNotFoundException.class,
                        EventNotFoundException.class,
                        RequestNotFoundException.class,
-                       CompilationNotFoundException.class})
+                       CompilationNotFoundException.class,
+                       CommentNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handle404Exception(final Exception e) {
         log.error("{} {}", HttpStatus.NOT_FOUND, e.getMessage());
@@ -39,7 +42,8 @@ public class ErrorHandler {
 
     @ExceptionHandler({EventCancelException.class,
                        EventValidationException.class,
-                       RequestValidationException.class})
+                       RequestValidationException.class,
+                       CommentValidationException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handle403Exception(final Exception e) {
         log.error("{} {}", HttpStatus.FORBIDDEN, e.getMessage());
