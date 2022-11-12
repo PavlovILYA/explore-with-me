@@ -20,9 +20,7 @@ import ru.practicum.explore.with.me.event.exception.EventCancelException;
 import ru.practicum.explore.with.me.event.exception.EventNotFoundException;
 import ru.practicum.explore.with.me.event.exception.EventValidationException;
 import ru.practicum.explore.with.me.event.exception.HitSendException;
-import ru.practicum.explore.with.me.event.model.DslPredicate;
-import ru.practicum.explore.with.me.event.model.Event;
-import ru.practicum.explore.with.me.event.model.EventState;
+import ru.practicum.explore.with.me.event.model.*;
 import ru.practicum.explore.with.me.event.repository.EventRepository;
 
 import java.time.LocalDateTime;
@@ -137,9 +135,16 @@ public class EventService {
     public List<EventFullDto> getEventsAndConsiderStats(String text, Boolean paid,
                                                         LocalDateTime start, LocalDateTime end,
                                                         Boolean onlyAvailable, EventSort eventSort,
+                                                        SearchArea searchArea,
                                                         int from, int size,
                                                         HitDto hitDto) {
         Predicate predicate = DslPredicate.builder()
+                .addPredicate(searchArea,
+                        a -> event.location.lat.subtract(searchArea.getLocation().getLat())
+                                .multiply(event.location.lat.subtract(searchArea.getLocation().getLat()))
+                                .add(event.location.lon.subtract(searchArea.getLocation().getLon())
+                                .multiply(event.location.lon.subtract(searchArea.getLocation().getLon())))
+                                .loe(searchArea.getRadius() * searchArea.getRadius()))
                 .addPredicate(text, t -> event.description.containsIgnoreCase(t)
                         .or(event.annotation.containsIgnoreCase(t)))
                 .addPredicate(paid, event.paid::eq)
@@ -147,8 +152,13 @@ public class EventService {
                 .addPredicate(end, event.eventDate::loe)
                 .build();
         // изначально сортируем по дате
-        Stream<Event> eventStream = StreamSupport.stream(
-                eventRepository.findAll(predicate, Sort.by("eventDate")).spliterator(), false);
+        Stream<Event> eventStream;
+        if (predicate != null) {
+            eventStream = StreamSupport.stream(
+                    eventRepository.findAll(predicate, Sort.by("eventDate")).spliterator(), false);
+        } else {
+            eventStream = eventRepository.findAll(Sort.by("eventDate")).stream();
+        }
         // если нужно, фильтруем – оставляем только события, у которых не исчерпан лимит запросов на участие
         if (onlyAvailable) {
             eventStream = getOnlyAvailable(eventStream);
