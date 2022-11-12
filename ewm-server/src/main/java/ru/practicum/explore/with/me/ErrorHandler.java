@@ -1,7 +1,10 @@
 package ru.practicum.explore.with.me;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -49,6 +52,22 @@ public class ErrorHandler {
         log.error("{} {}", HttpStatus.FORBIDDEN, e.getMessage());
         return ErrorResponse.builder()
                 .status(HttpStatus.FORBIDDEN.name())
+                .reason("For the requested operation the conditions are not met.")
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now().format(formatter))
+                .build();
+    }
+
+    @ExceptionHandler({MissingServletRequestParameterException.class,
+                       MethodArgumentNotValidException.class,
+                       org.hibernate.exception.ConstraintViolationException.class,
+                       javax.validation.ConstraintViolationException.class,
+                       DataIntegrityViolationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handle400Exception(final Exception e) {
+        log.error("{} {}", HttpStatus.BAD_REQUEST, e.getMessage());
+        return ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.name())
                 .reason("For the requested operation the conditions are not met.")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now().format(formatter))
