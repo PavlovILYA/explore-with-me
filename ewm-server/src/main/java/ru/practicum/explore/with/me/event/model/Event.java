@@ -3,11 +3,13 @@ package ru.practicum.explore.with.me.event.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import ru.practicum.explore.with.me.category.model.Category;
+import ru.practicum.explore.with.me.comment.model.Comment;
 import ru.practicum.explore.with.me.compilation.model.Compilation;
 import ru.practicum.explore.with.me.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -47,4 +49,7 @@ public class Event {
     @ToString.Exclude
     @ManyToMany(mappedBy = "events", fetch = FetchType.LAZY)
     private List<Compilation> compilations;
+    @ToString.Exclude
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
 }

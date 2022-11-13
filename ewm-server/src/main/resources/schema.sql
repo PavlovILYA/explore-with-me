@@ -33,6 +33,19 @@ CREATE TABLE IF NOT EXISTS events (
     FOREIGN KEY (initiator_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS comments (
+    id BIGINT GENERATED ALWAYS AS IDENTITY,
+    event_id BIGINT NOT NULL,
+    text VARCHAR(2000) NOT NULL,
+    commentator_id BIGINT, -- if null -> commentator = admin
+    published_on TIMESTAMP NOT NULL,
+    by_admin BOOLEAN NOT NULL,
+    by_initiator BOOLEAN NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE,
+    FOREIGN KEY (commentator_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS compilations (
     id BIGINT GENERATED ALWAYS AS IDENTITY,
     title TEXT UNIQUE NOT NULL,
@@ -63,6 +76,7 @@ CREATE TABLE IF NOT EXISTS participation_requests (
 -- DELETE FROM participation_requests;
 -- DELETE FROM events_compilations;
 -- DELETE FROM compilations;
+-- DELETE FROM comments;
 -- DELETE FROM events;
 -- DELETE FROM categories;
 -- DELETE FROM users;
@@ -70,6 +84,7 @@ CREATE TABLE IF NOT EXISTS participation_requests (
 -- DROP TABLE participation_requests;
 -- DROP TABLE events_compilations;
 -- DROP TABLE compilations;
+-- DROP TABLE comments;
 -- DROP TABLE events;
 -- DROP TABLE categories;
 -- DROP TABLE users;

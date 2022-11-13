@@ -33,20 +33,18 @@ public class EventController {
     }
 
     @GetMapping
-    public List<EventFullDto> getEventsByAdmin(@RequestParam(value = "users", defaultValue = "null") List<Long> userIds,
-                                               @RequestParam(value = "states", defaultValue = "null") List<String> stringStates,
-                                               @RequestParam(value = "categories", defaultValue = "null") List<Long> categoryIds,
-                                               @RequestParam(value = "rangeStart", defaultValue = "null") String rangeStart,
-                                               @RequestParam(value = "rangeEnd", defaultValue = "null") String rangeEnd,
+    public List<EventFullDto> getEventsByAdmin(@RequestParam(value = "users", required = false) List<Long> userIds,
+                                               @RequestParam(value = "states", required = false) List<String> stringStates,
+                                               @RequestParam(value = "categories", required = false) List<Long> categoryIds,
+                                               @RequestParam(value = "rangeStart", required = false) String rangeStart,
+                                               @RequestParam(value = "rangeEnd", required = false) String rangeEnd,
                                                @PositiveOrZero
                                                @RequestParam(value = "from", defaultValue = "0") int from,
                                                @Positive
                                                @RequestParam(value = "size", defaultValue = "10") int size) {
         LocalDateTime start = DateTimeEncoder.decodeAndParse(rangeStart);
         LocalDateTime end = DateTimeEncoder.decodeAndParse(rangeEnd);
-        List<EventState> states = stringStates.stream()
-                .map(EventState::valueOf)
-                .collect(Collectors.toList());
+        List<EventState> states = parseStates(stringStates);
         log.info("GET /admin/events users={} states={} categories={} rangeStart={} rangeEnd={} from={} size={}",
                 userIds, states, categoryIds, start, end, from, size);
         return eventService.getEventsByAdmin(userIds, states, categoryIds, start, end, from, size);
@@ -72,5 +70,14 @@ public class EventController {
     public EventFullDto rejectEventByAdmin(@PathVariable("eventId") Long eventId) {
         log.info("PATCH /admin/events/{}/reject", eventId);
         return eventService.rejectEventByAdmin(eventId);
+    }
+
+    private List<EventState> parseStates(List<String> stringStates) {
+        if (stringStates == null) {
+            return null;
+        }
+        return stringStates.stream()
+                .map(EventState::valueOf)
+                .collect(Collectors.toList());
     }
 }

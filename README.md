@@ -30,3 +30,5 @@ Swagger-спецификация [сервера статистики](ewm-stats
 Postman-тесты для [основного сервера](Postman/Explore-With-Me-Main.json)
 
 Postman-тесты для [сервера статистики](Postman/Explore-With-Me-Statistics.json)
+
+Postman-тесты для [сервера статистики](Postman/Explore-With-Me-Feature.json)

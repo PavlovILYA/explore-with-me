@@ -2,6 +2,7 @@ package ru.practicum.explore.with.me.event;
 
 import ru.practicum.explore.with.me.category.CategoryMapper;
 import ru.practicum.explore.with.me.category.model.Category;
+import ru.practicum.explore.with.me.comment.CommentMapper;
 import ru.practicum.explore.with.me.event.dto.request.BaseEventUpdateDto;
 import ru.practicum.explore.with.me.event.dto.request.EventCreateDto;
 import ru.practicum.explore.with.me.event.dto.response.EventFullDto;
@@ -12,6 +13,8 @@ import ru.practicum.explore.with.me.user.UserMapper;
 import ru.practicum.explore.with.me.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import static ru.practicum.explore.with.me.Constants.formatter;
 
@@ -86,6 +89,9 @@ public class EventMapper {
                 .state(event.getState().name())
                 .title(event.getTitle())
                 .views(hits)
+                .comments(event.getComments() == null ? new ArrayList<>() : event.getComments().stream()
+                        .map(CommentMapper::toDto)
+                        .collect(Collectors.toList()))
                 .build();
     }
 

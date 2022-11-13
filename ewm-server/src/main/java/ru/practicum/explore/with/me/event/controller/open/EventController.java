@@ -10,6 +10,9 @@ import ru.practicum.explore.with.me.event.EventMapper;
 import ru.practicum.explore.with.me.event.dto.request.EventSort;
 import ru.practicum.explore.with.me.event.dto.response.EventFullDto;
 import ru.practicum.explore.with.me.event.dto.response.EventShortDto;
+import ru.practicum.explore.with.me.event.exception.EventValidationException;
+import ru.practicum.explore.with.me.event.model.Location;
+import ru.practicum.explore.with.me.event.model.SearchArea;
 import ru.practicum.explore.with.me.event.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,10 +34,16 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping
-    public List<EventShortDto> getEvents(@RequestParam(value = "text", defaultValue = "null") String text,
-                                         @RequestParam(value = "paid", defaultValue = "null") Boolean paid,
-                                         @RequestParam(value = "rangeStart", defaultValue = "null") String rangeStart,
-                                         @RequestParam(value = "rangeEnd", defaultValue = "null") String rangeEnd,
+    public List<EventShortDto> getEvents(@PositiveOrZero
+                                         @RequestParam(value = "lat", required = false) Double lat,
+                                         @PositiveOrZero
+                                         @RequestParam(value = "lon", required = false) Double lon,
+                                         @Positive
+                                         @RequestParam(value = "radius", required = false) Double radius,
+                                         @RequestParam(value = "text", required = false) String text,
+                                         @RequestParam(value = "paid", required = false) Boolean paid,
+                                         @RequestParam(value = "rangeStart", required = false) String rangeStart,
+                                         @RequestParam(value = "rangeEnd", required = false) String rangeEnd,
                                          @RequestParam(value = "onlyAvailable", defaultValue = "false")
                                              Boolean onlyAvailable,
                                          @RequestParam(value = "sort", defaultValue = "EVENT_DATE") String sort,
@@ -43,14 +52,16 @@ public class EventController {
                                          @Positive
                                          @RequestParam(value = "size", defaultValue = "10") int size,
                                          HttpServletRequest request) {
-        HitDto hitDto = makeHitDto(request.getRequestURI(), request.getRemoteAddr());
-        log.info("HIT: {}", hitDto);
+        SearchArea searchArea = parseSearchArea(lat, lon, radius);
         LocalDateTime start = DateTimeEncoder.decodeAndParse(rangeStart);
         LocalDateTime end = DateTimeEncoder.decodeAndParse(rangeEnd);
         EventSort eventSort = EventSort.valueOf(sort);
-        log.info("GET /events text={} paid={} start={} end={} onlyAvailable={} sort={} from={} size={}",
-                text, paid, start, end, onlyAvailable, eventSort, from, size);
-        return eventService.getEventsAndConsiderStats(text, paid, start, end,onlyAvailable, eventSort, from, size,
+        log.info("GET /events text={} paid={} start={} end={} onlyAvailable={} sort={} from={} size={} searchArea={}",
+                text, paid, start, end, onlyAvailable, eventSort, from, size, searchArea);
+        HitDto hitDto = makeHitDto(request.getRequestURI(), request.getRemoteAddr());
+        log.info("HIT: {}", hitDto);
+        return eventService.getEventsAndConsiderStats(text, paid, start, end,onlyAvailable, eventSort, searchArea,
+                        from, size,
                         hitDto)
                 .stream()
                 .map(EventMapper::toShortDto)
@@ -73,5 +84,17 @@ public class EventController {
                 .ip(ip)
                 .timestamp(LocalDateTime.now().format(formatter))
                 .build();
+    }
+
+    private SearchArea parseSearchArea(Double lat, Double lon, Double radius) {
+        if (radius == null && lat == null && lon == null) {
+            return null;
+        }
+        if (radius != null && lat != null && lon != null) {
+            return new SearchArea(new Location(lat, lon), radius);
+        } else {
+            throw new EventValidationException("Wrong search area params: lat=" + lat +
+                    " lon=" + lon + " radius=" + radius);
+        }
     }
 }

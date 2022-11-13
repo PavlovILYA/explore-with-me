@@ -14,6 +14,9 @@ public class DateTimeEncoder {
     }
 
     public static LocalDateTime decodeAndParse(String encodedDateTimeString) {
+        if (encodedDateTimeString == null) {
+            return null;
+        }
         String decodedDateTimeString = URLDecoder.decode(encodedDateTimeString, StandardCharsets.UTF_8);
         return LocalDateTime.parse(decodedDateTimeString, formatter);
     }
