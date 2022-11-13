@@ -29,4 +29,4 @@ Postman-тесты для [основного сервера](Postman/Explore-Wi
 
 Postman-тесты для [сервера статистики](Postman/Explore-With-Me-Statistics.json)
 
-Postman-тесты для [сервера статистики](Postman/Explore-With-Me-Feature.json)
+Postman-тесты для [дополнительных фич (комментарии и поиск по геопозиции)](Postman/Explore-With-Me-Feature.json)
