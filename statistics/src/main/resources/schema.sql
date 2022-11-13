@@ -6,3 +6,5 @@ CREATE TABLE IF NOT EXISTS hits (
     date TIMESTAMP NOT NULL ,
     PRIMARY KEY (id)
 );
+
+-- DROP TABLE hits
